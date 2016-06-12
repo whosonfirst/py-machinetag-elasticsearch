@@ -29,7 +29,6 @@ def query_filters(**kwargs):
             esc_pred = machinetag.elasticsearch.escape(kwargs['predicate'])
             esc_value = machinetag.elasticsearch.escape(kwargs['value'])
 
-            # include_filter = '.*\.' + esc_pred + '\.' + esc_value + '$'
             include_filter = '.*\/' + esc_pred + '\/' + esc_value + '$'
 
         # all the namespaces for a predicate
@@ -37,9 +36,6 @@ def query_filters(**kwargs):
         elif kwargs.get('predicate', None):
 
             esc_pred = machinetag.elasticsearch.escape(kwargs['predicate'])
-
-            # include_filter = '^.*\.' + esc_pred
-            # exclude_filter = '.*\/.*\/.*'
 
             include_filter = '^.*\/' + esc_pred
             exclude_filter = '.*\/.*\/.*'
@@ -50,14 +46,12 @@ def query_filters(**kwargs):
 
             esc_value = machinetag.elasticsearch.escape(kwargs['value'])
 
-            # include_filter = '.*\..*\.' + esc_value + '$'
             include_filter = '.*\/.*\/' + esc_value + '$'
 
         # all the namespaces
         
         else:
 
-            # exclude_filter = '.*\..*'
             exclude_filter = '.*\/.*'
 
     elif kwargs.get('filter', None) == 'predicates':
@@ -71,7 +65,6 @@ def query_filters(**kwargs):
             esc_ns = machinetag.elasticsearch.escape(kwargs['namespace'])
             esc_value = machinetag.elasticsearch.escape(kwargs['value'])
 
-            # include_filter = '^' + esc_ns + '\..*\.' + esc_value + '$'
             include_filter = '^' + esc_ns + '\/.*\.' + esc_value + '$'
 
         # all the predicates for a namespace
@@ -79,9 +72,6 @@ def query_filters(**kwargs):
         elif kwargs.get('namespace', None):
 
             esc_ns = machinetag.elasticsearch.escape(kwargs['namespace'])
-
-            # include_filter = '^' + esc_ns + '\.[^\.]+'
-            # exclude_filter = '.*\..*\..*'
 
             include_filter = '^' + esc_ns + '\/[^\/]+'
             exclude_filter = '.*\/.*\/.*'
@@ -92,15 +82,11 @@ def query_filters(**kwargs):
 
             esc_value = machinetag.elasticsearch.escape(kwargs['value'])
 
-            # include_filter = '.*\..*\.' + esc_value + '$'
             include_filter = '.*\/.*\/' + esc_value + '$'
             
         # all the predicates
 
         else:
-
-            # include_filter = '.*\..*'
-            # exclude_filter = '.*\..*\..*'
 
             include_filter = '.*\/.*'
             exclude_filter = '.*\/.*\/.*'
@@ -124,7 +110,6 @@ def query_filters(**kwargs):
 
             esc_ns = machinetag.elasticsearch.escape(kwargs['namespace'])
 
-            # include_filter = '^' + esc_ns + '\..*\..*'
             include_filter = '^' + esc_ns + '\/.*\/.*'
 
         # all the values for a predicate
@@ -133,18 +118,35 @@ def query_filters(**kwargs):
             
             esc_pred = machinetag.elasticsearch.escape(kwargs['predicate'])
 
-            # include_filter = '^.*\.' + esc_pred + '\..*'
             include_filter = '^.*\/' + esc_pred + '\/.*'
 
         # all the values
 
         else:
 
-            # include_filter = '.*\..*\..*'
-            include_filter = '.*\./*\/.*'
+            include_filter = '.*\/.*\/.*'
 
     else:
-        pass
+
+        # TO DO - all the other combinations (20160612/thisisaaronland)
+
+        if kwargs.get('namespace', None):
+            
+            esc_ns = machinetag.elasticsearch.escape(kwargs['namespace'])
+            include_filter = '^' + esc_ns + '\/.*'
+
+        elif kwargs.get('predicate', None):
+            
+            esc_pred = machinetag.elasticsearch.escape(kwargs['predicate'])
+            include_filter = '^.*\/' + esc_pred + '\/.*'
+
+        elif kwargs.get('value', None):
+            
+            esc_value = machinetag.elasticsearch.escape(kwargs['value'])
+            include_filter = '^.*\/.*\/' + esc_value + '$'
+
+        else:
+            pass
 
     return include_filter, exclude_filter, rsp_filter
 
@@ -172,6 +174,25 @@ def sort_filtered(raw):
 
     return sorted
 
+def query_filter_belongsto_namespaces(raw, belongsto_ns):
+
+    filtered = []
+    tmp = {}
+
+    for b in raw:
+        key = b['key']
+        count = b['doc_count']
+
+        key = key.split("/")
+        ns = key[0]
+
+        if ns != belongsto_ns:
+            continue
+
+        filtered.append(b)
+        
+    return filtered
+
 def query_filter_namespaces(raw):
 
     filtered = []
@@ -184,7 +205,7 @@ def query_filter_namespaces(raw):
         key = b['key']
         count = b['doc_count']
 
-        key = key.split(".")
+        key = key.split("/")
         ns = key[0]
 
         total = tmp.get(ns, 0)
@@ -206,7 +227,7 @@ def query_filter_predicates(raw):
         key = b['key']
         count = b['doc_count']
 
-        key = key.split(".")
+        key = key.split("/")
         pred = key[1]
 
         total = tmp.get(pred, 0)
@@ -228,7 +249,7 @@ def query_filter_values(raw):
         key = b['key']
         count = b['doc_count']
         
-        key = key.split(".")
+        key = key.split("/")
         value = key[2]
 
         total = tmp.get(value, 0)

@@ -11,6 +11,10 @@ def query_filter_from_string(str_mt, **kwargs):
     if not mt.is_machinetag():
         return None
 
+    return query_filter_from_machinetag(mt, **kwargs)
+
+def query_filter_from_machinetag(mt, **kwargs):
+
     ns = mt.namespace()
     pred = mt.predicate()
     value = mt.value()
@@ -35,43 +39,36 @@ def query_filter_from_string(str_mt, **kwargs):
     if ns != None and pred != None and value != None:
         
         # is machine tag
-        # query_filter = esc_ns + '\.' + esc_pred + '\.' + esc_value
         query_filter = esc_ns + '\/' + esc_pred + '\/' + esc_value
         
     elif ns != None and pred == None and value == None:
         
         # sg:*=
-        # query_filter = esc_ns + '\..*\\.*'
         query_filter = esc_ns + '\/[^\/]+\/.*'
         
     elif ns != None and pred != None and value == None:
 
         # sg:services=
-        # query_filter = esc_ns + '\.' + esc_pred + '\..*'
         query_filter = esc_ns + '\/' + esc_pred + '\/.*'
                 
     elif ns != None and pred == None and value != None:
 
         # sg:*=personal
-        # query_filter = esc_ns + '\.[^\.]+\.' + esc_value
         query_filter = esc_ns + '\/[^\/]+\/' + esc_value
 
     elif ns == None and pred != None and value != None:
 
         # *:services=personal
-        # query_filter = '[^\.]+\.' + esc_pred + '\.' + esc_value
         query_filter = '[^\/]+\.' + esc_pred + '\/' + esc_value
         
     elif ns == None and pred != None and value == None:
             
         # *:services=
-        # query_filter = '[^\.]+\.' + esc_pred + '\..*'
         query_filter = '[^\/]+\/' + esc_pred + '\/.*'
 
     elif ns == None and pred == None and value != None:
         
         # *:*=personal
-        # query_filter = '[^\.]+\.[^\.]+\.' + esc_value
         query_filter = '[^\/]+\/[^\/]+\/' + esc_value
 
     else:

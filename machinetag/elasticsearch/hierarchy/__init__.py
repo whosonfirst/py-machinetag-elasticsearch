@@ -30,9 +30,9 @@ def unpathify_as_machinetag(str):
 
     parts = str.split("/")
     count = len(parts)
-
+    
     if count == 1:
-        return machinetag.from_triple(parts[0], None, None, allow_wildcards=True)
+        return machinetag.from_triple(parts[0], "*", None, allow_wildcards=True)
     elif count == 2:
         return machinetag.from_triple(parts[0], parts[1], None, allow_wildcards=True)
     elif count == 3:
@@ -197,7 +197,7 @@ def sort_filtered(raw):
         count = b['doc_count']
         
         bucket = tmp.get(count, [])
-        bucket.append(key)
+        bucket.append(b)
         
         tmp[count] = bucket
         
@@ -206,37 +206,16 @@ def sort_filtered(raw):
     counts.reverse()
 
     for count in counts:
-        for key in tmp[count]:
-            sorted.append({'doc_count': count, 'key': key })
+        for b in tmp[count]:
+            b['doc_count'] = count
+            sorted.append(b)
 
     return sorted
-
-def query_filter_belongsto_namespaces(raw, belongsto_ns):
-
-    filtered = []
-    tmp = {}
-
-    for b in raw:
-        key = b['key']
-        count = b['doc_count']
-
-        key = key.split("/")
-        ns = key[0]
-
-        if ns != belongsto_ns:
-            continue
-
-        filtered.append(b)
-        
-    return filtered
 
 def query_filter_namespaces(raw):
 
     filtered = []
     tmp = {}
-
-    predicates = {}
-    values = {}
 
     for b in raw:
         key = b['key']
@@ -250,8 +229,8 @@ def query_filter_namespaces(raw):
         
         tmp[ns] = total
         
-    for pred, count in tmp.items():
-        filtered.append({'doc_count': count, 'key': pred})
+    for ns, count in tmp.items():
+        filtered.append({'doc_count': count, 'key': ns, 'namespace': ns, 'predicate': None, 'value': None})
         
     return sort_filtered(filtered)
 
@@ -273,7 +252,7 @@ def query_filter_predicates(raw):
         tmp[pred] = total
 
     for pred, count in tmp.items():
-        filtered.append({'doc_count': count, 'key': pred})
+        filtered.append({'doc_count': count, 'key': pred, 'namespace': None, 'predicate': pred, 'value': None})
         
     return sort_filtered(filtered)
 
@@ -294,7 +273,7 @@ def query_filter_values(raw):
 
         tmp[value] = total
 
-    for pred, count in tmp.items():
-        filtered.append({'doc_count': count, 'key': pred})
+    for value, count in tmp.items():
+        filtered.append({'doc_count': count, 'key': value, 'namespace': None, 'predicate': None, 'value': value})
 
     return sort_filtered(filtered)

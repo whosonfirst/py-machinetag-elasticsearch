@@ -59,7 +59,7 @@ def query_filter_from_machinetag(mt, **kwargs):
     elif ns == None and pred != None and value != None:
 
         # *:services=personal
-        query_filter = '[^\/]+\.' + esc_pred + '\/' + esc_value
+        query_filter = '[^\/]+\/' + esc_pred + '\/' + esc_value
         
     elif ns == None and pred != None and value == None:
             

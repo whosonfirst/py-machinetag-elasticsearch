@@ -1,7 +1,44 @@
 # https://pythonhosted.org/setuptools/setuptools.html#namespace-packages
 __import__('pkg_resources').declare_namespace(__name__)
 
+import machinetag
 import machinetag.elasticsearch
+
+def enpathify_from_string(str):
+
+    mt = machinetag.from_string(str)
+
+    if not mt.is_machinetag():
+        return None
+
+    return enpathify_from_machinetag(mt)
+
+def enpathify_from_machinetag(mt):
+
+    return "/".join((mt.namespace(), mt.predicate(), mt.value()))
+
+def unpathify_as_string(str):
+
+    mt = unpathify_as_machinetag(str)
+
+    if not mt or not mt.is_machinetag():
+        return None
+
+    return mt.as_string()
+
+def unpathify_as_machinetag(str):
+
+    parts = str.split("/")
+    count = len(parts)
+
+    if count == 1:
+        return machinetag.from_triple(parts[0], None, None, allow_wildcards=True)
+    elif count == 2:
+        return machinetag.from_triple(parts[0], parts[1], None, allow_wildcards=True)
+    elif count == 3:
+        return machinetag.from_triple(parts[0], parts[1], parts[2])
+    else:
+        return None
 
 def query_filters(**kwargs):
 

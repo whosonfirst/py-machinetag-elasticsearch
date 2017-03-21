@@ -21,12 +21,6 @@ setup(
     description='Python libraries for working with machinetags in Elasticsearch',
     author='Mapzen',
     url='https://github.com/whosonfirst/py-machinetag-elasticsearch',
-    install_requires=[
-        'machinetag>=1.4'
-        ],
-    dependency_links=[
-        'https://github.com/whosonfirst/py-machinetag/tarball/master#egg=machinetag-1.4',
-        ],
     packages=packages,
     scripts=[
         ],

@@ -16,7 +16,7 @@ desc = open("README.md").read()
 
 setup(
     name='machinetag.elasticsearch',
-    namespace_packages=['machinetag', 'machinetag.elasticsearch', 'machinetag.elasticsearch.wildcard', 'machinetag.elasticsearch.hierarchy'],
+    namespace_packages=['machinetag', 'machinetag.elasticsearch' ],
     version=version,
     description='Python libraries for working with machinetags in Elasticsearch',
     author='Mapzen',

@@ -1,12 +1,9 @@
-# https://pythonhosted.org/setuptools/setuptools.html#namespace-packages
-__import__('pkg_resources').declare_namespace(__name__)
-
-import machinetag
+import machinetag.common
 import machinetag.elasticsearch
 
 def query_filter_from_string(str_mt, **kwargs):
 
-    mt = machinetag.from_string(str_mt, allow_wildcards=True)
+    mt = machinetag.common.from_string(str_mt, allow_wildcards=True)
         
     if not mt.is_machinetag():
         return None

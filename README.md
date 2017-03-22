@@ -2,6 +2,12 @@
 
 Python libraries for working with machinetags in Elasticsearch
 
+## Install
+
+```
+sudo pip install -r requirements.txt .
+```
+
 ## Usage
 
 Too soon.

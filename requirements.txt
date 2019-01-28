@@ -1,1 +1,1 @@
-git+git://github.com/whosonfirst/py-machinetag
+git+https://github.com/whosonfirst/py-machinetag#egg=machinetag
